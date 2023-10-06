@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  web-prod:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - web2
+
+  web-qa:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "8080:80"
+    networks:
+      - web2
+
+  web-dev:
+    build: ./app
+    restart: always
+    ports:
+      - "8081:80"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: 20M
+
+networks:
+  web2:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.0.0.0/24
